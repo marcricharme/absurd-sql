@@ -103,7 +103,7 @@ export function writeChunks(bufferView, blockSize, start, end) {
 }
 
 export class File {
-  constructor(filename, ops, meta = null) {
+  constructor(filename, ops, meta = null, keyBytes = null) {
     this.filename = filename;
     this.buffer = new Map();
     this.ops = ops;
@@ -111,6 +111,7 @@ export class File {
     this._metaDirty = false;
     this.writeLock = false;
     this.openHandles = 0;
+    this.keyBytes = keyBytes;
   }
 
   bufferChunks(chunks) {
@@ -125,7 +126,7 @@ export class File {
 
     // Don't open the file again if it's already open
     if (this.openHandles === 1) {
-      this.ops.open();
+      this.ops.open(this.keyBytes);
       let meta = this.ops.readMeta();
 
       // It's possible that `setattr` has already been called if opening

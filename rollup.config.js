@@ -28,7 +28,7 @@ function getConfig(entry, filename, perf) {
           }
         }),
       webWorkerLoader({
-        pattern: /.*\/worker\.js/,
+        pattern: /.*\/.*worker\.js/,
         targetPlatform: 'browser',
         external: [],
         plugins: [terser()]

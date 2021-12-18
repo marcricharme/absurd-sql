@@ -5,11 +5,13 @@ import { FileOps } from './file-ops';
 import { FileOpsFallback } from './file-ops-fallback';
 
 export default class IndexedDBBackend {
-  constructor(onFallbackFailure) {
+  constructor(onFallbackFailure, keyProvider) {
     this.onFallbackFailure = onFallbackFailure;
+    this.keyProvider = keyProvider;
   }
 
   createFile(filename) {
+    let keyBytes = this.keyProvider && this.keyProvider(filename);
     let ops;
     if (typeof SharedArrayBuffer !== 'undefined') {
       // SharedArrayBuffer exists! We can run this fully
@@ -21,7 +23,7 @@ export default class IndexedDBBackend {
       ops = new FileOpsFallback(filename, this.onFallbackFailure);
     }
 
-    let file = new File(filename, ops);
+    let file = new File(filename, ops, null, keyBytes);
 
     // If we don't need perf data, there's no reason for us to hold a
     // reference to the files. If we did we'd have to worry about
